@@ -13,13 +13,13 @@ export function AuthProvider({ children }) {
     let isMounted = true;
 
     const initializeAuth = async () => {
-      setLoading(true);
-      setAuthError(null);
-
       try {
-        const { data, error } = await authService.getSession();
-        if (data?.session && isMounted) {
-          const authUser = data.session.user;
+        setLoading(true);
+        setAuthError(null);
+
+        const sessionResult = await authService.getSession();
+        if (sessionResult?.success && sessionResult?.data?.session?.user && isMounted) {
+          const authUser = sessionResult.data.session.user;
           setUser(authUser);
 
           const profileResult = await authService.getUserProfile(authUser.id);
@@ -27,13 +27,13 @@ export function AuthProvider({ children }) {
             setUserProfile(profileResult.data);
           }
         }
-      } catch (err) {
-        setAuthError(err.message || "Authentication failed.");
-      } finally {
+
         if (window.location.hash.includes("access_token")) {
           window.history.replaceState({}, document.title, window.location.pathname);
         }
-
+      } catch (err) {
+        setAuthError(err.message || "Authentication failed.");
+      } finally {
         if (isMounted) setLoading(false);
       }
     };
