@@ -1,101 +1,82 @@
-# React
+# Slights Game App
 
-A modern React-based project utilizing the latest frontend technologies and tools for building responsive web applications.
+A multiplayer card game built with React and Supabase.
 
-## 🚀 Features
+## Deployment Setup
 
-- **React 18** - React version with improved rendering and concurrent features
-- **Vite** - Lightning-fast build tool and development server
-- **Redux Toolkit** - State management with simplified Redux setup
-- **TailwindCSS** - Utility-first CSS framework with extensive customization
-- **React Router v6** - Declarative routing for React applications
-- **Data Visualization** - Integrated D3.js and Recharts for powerful data visualization
-- **Form Management** - React Hook Form for efficient form handling
-- **Animation** - Framer Motion for smooth UI animations
-- **Testing** - Jest and React Testing Library setup
+### Environment Variables
 
-## 📋 Prerequisites
+For Vercel deployment, set these environment variables:
 
-- Node.js (v14.x or higher)
-- npm or yarn
-
-## 🛠️ Installation
-
-1. Install dependencies:
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-   
-2. Start the development server:
-   ```bash
-   npm start
-   # or
-   yarn start
-   ```
-
-## 📁 Project Structure
-
-```
-react_app/
-├── public/             # Static assets
-├── src/
-│   ├── components/     # Reusable UI components
-│   ├── pages/          # Page components
-│   ├── styles/         # Global styles and Tailwind configuration
-│   ├── App.jsx         # Main application component
-│   ├── Routes.jsx      # Application routes
-│   └── index.jsx       # Application entry point
-├── .env                # Environment variables
-├── index.html          # HTML template
-├── package.json        # Project dependencies and scripts
-├── tailwind.config.js  # Tailwind CSS configuration
-└── vite.config.js      # Vite configuration
+```bash
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_APP_URL=https://your-app.vercel.app
 ```
 
-## 🧩 Adding Routes
+### Supabase Configuration
 
-To add new routes to the application, update the `Routes.jsx` file:
+1. **Enable Google OAuth Provider:**
+   - Go to your Supabase dashboard
+   - Navigate to Authentication > Providers
+   - Enable Google provider
+   - Add your Google OAuth credentials
+   - Set authorized redirect URLs:
+     - `https://your-project.supabase.co/auth/v1/callback`
+     - `https://your-app.vercel.app/auth/callback`
 
-```jsx
-import { useRoutes } from "react-router-dom";
-import HomePage from "pages/HomePage";
-import AboutPage from "pages/AboutPage";
+2. **Configure Site URL:**
+   - Go to Authentication > Settings
+   - Set Site URL to: `https://your-app.vercel.app`
+   - Add redirect URLs:
+     - `https://your-app.vercel.app/game-lobby-dashboard`
+     - `https://your-app.vercel.app/**`
 
-const ProjectRoutes = () => {
-  let element = useRoutes([
-    { path: "/", element: <HomePage /> },
-    { path: "/about", element: <AboutPage /> },
-    // Add more routes as needed
-  ]);
+### Google OAuth Setup
 
-  return element;
-};
-```
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select existing
+3. Enable Google+ API
+4. Create OAuth 2.0 credentials
+5. Add authorized redirect URIs:
+   - `https://your-project.supabase.co/auth/v1/callback`
+6. Copy Client ID and Client Secret to Supabase
 
-## 🎨 Styling
+### Vercel Deployment
 
-This project uses Tailwind CSS for styling. The configuration includes:
+1. Connect your repository to Vercel
+2. Set environment variables in Vercel dashboard
+3. Deploy
 
-- Forms plugin for form styling
-- Typography plugin for text styling
-- Aspect ratio plugin for responsive elements
-- Container queries for component-specific responsive design
-- Fluid typography for responsive text
-- Animation utilities
+## Troubleshooting
 
-## 📱 Responsive Design
+### Favicon 404 Error
+- Ensure `public/favicon.ico` exists
+- Check `vite.config.js` configuration
+- Verify Vercel build includes public assets
 
-The app is built with responsive design using Tailwind CSS breakpoints.
+### Google OAuth "Provider not enabled" Error
+- Verify Google provider is enabled in Supabase
+- Check redirect URLs configuration
+- Ensure environment variables are set correctly
 
+### Build Errors
+- Check Node.js version compatibility
+- Verify all dependencies are installed
+- Review build logs for specific errors
 
-## 📦 Deployment
+## Local Development
 
-Build the application for production:
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Copy `.env.example` to `.env` and fill in values
+4. Start development server: `npm run dev`
+
+## Production Build
 
 ```bash
 npm run build
+npm run preview
 ```
 
 ## 🙏 Acknowledgments

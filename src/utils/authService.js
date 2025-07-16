@@ -164,17 +164,35 @@ class AuthService {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/game-lobby-dashboard`
+          redirectTo: `${import.meta.env.VITE_APP_URL || window.location.origin}/game-lobby-dashboard`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         }
       });
 
       if (error) {
+        // Handle specific OAuth errors
+        if (error.message.includes('provider is not enabled')) {
+          return { 
+            success: false, 
+            error: 'Google authentication is not configured. Please contact support or try email/password login.'
+          };
+        }
         return { success: false, error: error.message };
       }
 
       return { success: true, data: data };
     } catch (error) {
-      return { success: false, error: 'Google authentication failed' };
+      if (error?.message?.includes('Failed to fetch') || 
+          error?.message?.includes('AuthRetryableFetchError')) {
+        return { 
+          success: false, 
+          error: 'Cannot connect to authentication service. Your Supabase project may be paused or inactive. Please check your Supabase dashboard and resume your project if needed.'
+        };
+      }
+      return { success: false, error: 'Google authentication failed. Please try again or use email/password login.' };
     }
   }
 

@@ -278,6 +278,7 @@ const AuthenticationForm = ({
         iconName="Chrome"
         iconPosition="left"
         className="mb-4"
+        disabled={isLoading}
       >
         Continue with Google
       </Button>
