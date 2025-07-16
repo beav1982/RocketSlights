@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
 
 class AuthService {
+  // Sign in with email and password
   async signIn(email, password) {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -21,6 +22,7 @@ class AuthService {
     }
   }
 
+  // Sign up with email and password
   async signUp(email, password, userData = {}) {
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -38,6 +40,7 @@ class AuthService {
     }
   }
 
+  // Handle OAuth/email redirect result
   async handleOAuthRedirect() {
     try {
       if (typeof supabase.auth.exchangeCodeForSession !== 'function') {
@@ -48,6 +51,8 @@ class AuthService {
       }
 
       const { data, error } = await supabase.auth.exchangeCodeForSession();
+      console.log('OAuth redirect exchange result:', { data, error });
+
       if (error) return { success: false, error: error.message };
       return { success: true, data };
     } catch (error) {
@@ -58,6 +63,7 @@ class AuthService {
     }
   }
 
+  // Get current session
   async getSession() {
     try {
       const { data, error } = await supabase.auth.getSession();
@@ -71,6 +77,7 @@ class AuthService {
     }
   }
 
+  // Get user profile
   async getUserProfile(userId) {
     try {
       const { data, error } = await supabase
@@ -88,6 +95,7 @@ class AuthService {
     }
   }
 
+  // Sign out
   async signOut() {
     try {
       const { error } = await supabase.auth.signOut();
@@ -101,6 +109,7 @@ class AuthService {
     }
   }
 
+  // Password reset
   async resetPassword(email) {
     try {
       const { data, error } = await supabase.auth.resetPasswordForEmail(email);
@@ -114,6 +123,7 @@ class AuthService {
     }
   }
 
+  // Google OAuth sign-in
   async signInWithGoogle() {
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
