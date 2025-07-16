@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { supabase } from "../utils/supabase"; // ← needed for auth state change
 import authService from "../utils/authService";
 
 const AuthContext = createContext();
@@ -17,7 +18,6 @@ export function AuthProvider({ children }) {
         setLoading(true);
         setAuthError(null);
 
-        // ✅ Try to handle OAuth/email redirect first
         const { data, error } = await authService.handleOAuthRedirect();
         if (data?.session && isMounted) {
           const authUser = data.session.user;
@@ -28,7 +28,6 @@ export function AuthProvider({ children }) {
             setUserProfile(profileResult.data);
           }
         } else {
-          // 🔁 Fallback: try to get existing session
           const sessionResult = await authService.getSession();
           if (sessionResult?.success && sessionResult?.data?.session?.user && isMounted) {
             const authUser = sessionResult.data.session.user;
@@ -41,7 +40,6 @@ export function AuthProvider({ children }) {
           }
         }
 
-        // 🧼 Optional: Clean up URL after redirect
         if (window.location.hash.includes("access_token")) {
           window.history.replaceState({}, document.title, window.location.pathname);
         }
@@ -57,6 +55,21 @@ export function AuthProvider({ children }) {
 
     return () => {
       isMounted = false;
+    };
+  }, []);
+
+  // ✅ Listen for login/logout session changes
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        setUser(session.user);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => {
+      authListener?.subscription?.unsubscribe?.();
     };
   }, []);
 
