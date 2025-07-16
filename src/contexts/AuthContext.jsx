@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "../utils/supabase"; // ← needed for auth state change
 import authService from "../utils/authService";
 
 const AuthContext = createContext();
@@ -14,11 +13,11 @@ export function AuthProvider({ children }) {
     let isMounted = true;
 
     const initializeAuth = async () => {
-      try {
-        setLoading(true);
-        setAuthError(null);
+      setLoading(true);
+      setAuthError(null);
 
-        const { data, error } = await authService.handleOAuthRedirect();
+      try {
+        const { data, error } = await authService.getSession();
         if (data?.session && isMounted) {
           const authUser = data.session.user;
           setUser(authUser);
@@ -28,25 +27,13 @@ export function AuthProvider({ children }) {
             setUserProfile(profileResult.data);
           }
         }
-          const sessionResult = await authService.getSession();
-          if (sessionResult?.success && sessionResult?.data?.session?.user && isMounted) {
-            const authUser = sessionResult.data.session.user;
-            setUser(authUser);
-
-            const profileResult = await authService.getUserProfile(authUser.id);
-            if (profileResult?.success) {
-              setUserProfile(profileResult.data);
-            }
-          }
-        }
-
+      } catch (err) {
+        setAuthError(err.message || "Authentication failed.");
+      } finally {
         if (window.location.hash.includes("access_token")) {
           window.history.replaceState({}, document.title, window.location.pathname);
         }
 
-      } catch (err) {
-        setAuthError(err.message || "Authentication failed.");
-      } finally {
         if (isMounted) setLoading(false);
       }
     };
@@ -55,21 +42,6 @@ export function AuthProvider({ children }) {
 
     return () => {
       isMounted = false;
-    };
-  }, []);
-
-  // ✅ Listen for login/logout session changes
-  useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.user) {
-        setUser(session.user);
-      } else {
-        setUser(null);
-      }
-    });
-
-    return () => {
-      authListener?.subscription?.unsubscribe?.();
     };
   }, []);
 
