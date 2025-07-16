@@ -61,5 +61,5 @@ class AuthService {
   }
 }
 
-const authService = new AuthService();
-export default authService;
+const result = await authService.handleOAuthRedirect();
+console.log("OAuth Redirect Result:", result);
