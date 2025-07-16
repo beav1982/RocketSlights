@@ -1,24 +1,15 @@
 import { supabase } from './supabase';
 
 class AuthService {
-  // Sign in with email and password
   async signIn(email, password) {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) {
-        return { success: false, error: error.message };
-      }
-
-      return { success: true, data: data };
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) return { success: false, error: error.message };
+      return { success: true, data };
     } catch (error) {
-      if (error?.message?.includes('Failed to fetch') || 
-          error?.message?.includes('AuthRetryableFetchError')) {
-        return { 
-          success: false, 
+      if (error?.message?.includes('Failed to fetch') || error?.message?.includes('AuthRetryableFetchError')) {
+        return {
+          success: false,
           error: 'Cannot connect to authentication service. Your Supabase project may be paused or inactive. Please check your Supabase dashboard and resume your project if needed.'
         };
       }
@@ -26,37 +17,37 @@ class AuthService {
     }
   }
 
-  // Sign up with email and password
   async signUp(email, password, userData = {}) {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: userData,
-        }
+        options: { data: userData }
       });
-
-      if (error) {
-        return { success: false, error: error.message };
-      }
-
-      return { success: true, data: data };
+      if (error) return { success: false, error: error.message };
+      return { success: true, data };
     } catch (error) {
       return { success: false, error: error.message || 'Something went wrong during signup.' };
     }
   }
 
-  // Handle OAuth/email redirect result
   async handleOAuthRedirect() {
     try {
       const { data, error } = await supabase.auth.getSessionFromUrl();
-      if (error) {
-        return { success: false, error: error.message };
-      }
-      return { success: true, data: data };
+      if (error) return { success: false, error: error.message };
+      return { success: true, data };
     } catch (error) {
-      return { success: false, error: error.message || "Failed to handle redirect." };
+      return { success: false, error: error.message || 'Failed to handle redirect.' };
+    }
+  }
+
+  async signInWithGoogle() {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+      if (error) return { success: false, error: error.message };
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message || 'Google sign-in failed.' };
     }
   }
 }
