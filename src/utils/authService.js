@@ -33,10 +33,7 @@ class AuthService {
         email,
         password,
         options: {
-          data: {
-            display_name: userData.displayName || email.split('@')[0],
-            role: userData.role || 'player'
-          }
+          data: userData,
         }
       });
 
@@ -46,160 +43,23 @@ class AuthService {
 
       return { success: true, data: data };
     } catch (error) {
-      if (error?.message?.includes('Failed to fetch') || 
-          error?.message?.includes('AuthRetryableFetchError')) {
-        return { 
-          success: false, 
-          error: 'Cannot connect to authentication service. Your Supabase project may be paused or inactive. Please check your Supabase dashboard and resume your project if needed.'
-        };
-      }
-      return { success: false, error: 'Something went wrong during signup. Please try again.' };
+      return { success: false, error: error.message || 'Something went wrong during signup.' };
     }
   }
 
-  // Sign out
-  async signOut() {
+  // Handle OAuth/email redirect result
+  async handleOAuthRedirect() {
     try {
-      const { error } = await supabase.auth.signOut();
-      
+      const { data, error } = await supabase.auth.getSessionFromUrl();
       if (error) {
         return { success: false, error: error.message };
       }
-
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: 'Something went wrong during logout. Please try again.' };
-    }
-  }
-
-  // Get current session
-  async getSession() {
-    try {
-      const { data, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        return { success: false, error: error.message };
-      }
-
       return { success: true, data: data };
     } catch (error) {
-      return { success: false, error: 'Failed to get session' };
+      return { success: false, error: error.message || "Failed to handle redirect." };
     }
-  }
-
-  // Get user profile
-  async getUserProfile(userId) {
-    try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (error) {
-        return { success: false, error: error.message };
-      }
-
-      return { success: true, data: data };
-    } catch (error) {
-      if (error?.message?.includes('Failed to fetch') || 
-          error?.message?.includes('NetworkError')) {
-        return { 
-          success: false, 
-          error: 'Cannot connect to database. Your Supabase project may be paused or deleted. Please visit your Supabase dashboard to check project status.'
-        };
-      }
-      return { success: false, error: 'Failed to load user profile' };
-    }
-  }
-
-  // Update user profile
-  async updateUserProfile(userId, updates) {
-    try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .update({
-          ...updates,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', userId)
-        .select()
-        .single();
-
-      if (error) {
-        return { success: false, error: error.message };
-      }
-
-      return { success: true, data: data };
-    } catch (error) {
-      if (error?.message?.includes('Failed to fetch') || 
-          error?.message?.includes('NetworkError')) {
-        return { 
-          success: false, 
-          error: 'Cannot connect to database. Your Supabase project may be paused or deleted. Please visit your Supabase dashboard to check project status.'
-        };
-      }
-      return { success: false, error: 'Failed to update profile' };
-    }
-  }
-
-  // Reset password
-  async resetPassword(email) {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
-      
-      if (error) {
-        return { success: false, error: error.message };
-      }
-
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: 'Failed to send reset email' };
-    }
-  }
-
-  // Sign in with Google
-  async signInWithGoogle() {
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${import.meta.env.VITE_APP_URL || window.location.origin}/game-lobby-dashboard`,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-        }
-      });
-
-      if (error) {
-        // Handle specific OAuth errors
-        if (error.message.includes('provider is not enabled')) {
-          return { 
-            success: false, 
-            error: 'Google authentication is not configured. Please contact support or try email/password login.'
-          };
-        }
-        return { success: false, error: error.message };
-      }
-
-      return { success: true, data: data };
-    } catch (error) {
-      if (error?.message?.includes('Failed to fetch') || 
-          error?.message?.includes('AuthRetryableFetchError')) {
-        return { 
-          success: false, 
-          error: 'Cannot connect to authentication service. Your Supabase project may be paused or inactive. Please check your Supabase dashboard and resume your project if needed.'
-        };
-      }
-      return { success: false, error: 'Google authentication failed. Please try again or use email/password login.' };
-    }
-  }
-
-  // Listen for auth state changes
-  onAuthStateChange(callback) {
-    return supabase.auth.onAuthStateChange(callback);
   }
 }
 
-export default new AuthService();
+const authService = new AuthService();
+export default authService;
