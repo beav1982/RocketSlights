@@ -1,14 +1,9 @@
 import { supabase } from './supabase';
 
 class AuthService {
-  // Sign in with email and password
   async signIn(email, password) {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) return { success: false, error: error.message };
       return { success: true, data };
     } catch (error) {
@@ -22,24 +17,17 @@ class AuthService {
             'Cannot connect to authentication service. Your Supabase project may be paused or inactive. Please check your Supabase dashboard and resume your project if needed.'
         };
       }
-      return {
-        success: false,
-        error: 'Something went wrong during login. Please try again.'
-      };
+      return { success: false, error: 'Something went wrong during login. Please try again.' };
     }
   }
 
-  // Sign up with email and password
   async signUp(email, password, userData = {}) {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: userData
-        }
+        options: { data: userData }
       });
-
       if (error) return { success: false, error: error.message };
       return { success: true, data };
     } catch (error) {
@@ -50,17 +38,16 @@ class AuthService {
     }
   }
 
-  // Handle OAuth/email redirect result
   async handleOAuthRedirect() {
     try {
-      if (typeof supabase.auth.getSessionFromUrl !== 'function') {
+      if (typeof supabase.auth.exchangeCodeForSession !== 'function') {
         return {
           success: false,
-          error: 'Supabase getSessionFromUrl is not available. Check SDK version.'
+          error: 'exchangeCodeForSession is not available. Ensure supabase-js v2+ is installed.'
         };
       }
 
-      const { data, error } = await supabase.auth.getSessionFromUrl();
+      const { data, error } = await supabase.auth.exchangeCodeForSession();
       if (error) return { success: false, error: error.message };
       return { success: true, data };
     } catch (error) {
@@ -71,16 +58,8 @@ class AuthService {
     }
   }
 
-  // Get current session
   async getSession() {
     try {
-      if (typeof supabase.auth.getSession !== 'function') {
-        return {
-          success: false,
-          error: 'Supabase getSession is not a function. Ensure supabase-js v2+ is installed.'
-        };
-      }
-
       const { data, error } = await supabase.auth.getSession();
       if (error) return { success: false, error: error.message };
       return { success: true, data };
@@ -92,7 +71,6 @@ class AuthService {
     }
   }
 
-  // Get user profile
   async getUserProfile(userId) {
     try {
       const { data, error } = await supabase
@@ -100,7 +78,6 @@ class AuthService {
         .select('*')
         .eq('id', userId)
         .single();
-
       if (error) return { success: false, error: error.message };
       return { success: true, data };
     } catch (error) {
@@ -111,7 +88,6 @@ class AuthService {
     }
   }
 
-  // Sign out
   async signOut() {
     try {
       const { error } = await supabase.auth.signOut();
@@ -125,7 +101,6 @@ class AuthService {
     }
   }
 
-  // Password reset
   async resetPassword(email) {
     try {
       const { data, error } = await supabase.auth.resetPasswordForEmail(email);
@@ -139,7 +114,6 @@ class AuthService {
     }
   }
 
-  // Google OAuth sign-in
   async signInWithGoogle() {
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -148,7 +122,6 @@ class AuthService {
           redirectTo: window.location.origin + '/user-authentication'
         }
       });
-
       if (error) return { success: false, error: error.message };
       return { success: true, data };
     } catch (error) {
