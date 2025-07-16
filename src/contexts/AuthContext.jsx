@@ -27,7 +27,7 @@ export function AuthProvider({ children }) {
           if (profileResult?.success) {
             setUserProfile(profileResult.data);
           }
-        } else {
+        }
           const sessionResult = await authService.getSession();
           if (sessionResult?.success && sessionResult?.data?.session?.user && isMounted) {
             const authUser = sessionResult.data.session.user;
