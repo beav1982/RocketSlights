@@ -13,40 +13,43 @@ export const AuthProvider = ({ children }) => {
     let isMounted = true;
 
     const initializeAuth = async () => {
-      setLoading(true);
-      setAuthError(null);
+      try {
+        setLoading(true);
+        setAuthError(null);
 
-      // Step 1: Handle OAuth Redirect
-      const redirectResult = await authService.handleOAuthRedirect();
-      if (redirectResult?.success && redirectResult?.data?.session) {
-        const authUser = redirectResult.data.session.user;
-        if (isMounted) {
-          setUser(authUser);
-          const profileResult = await authService.getUserProfile(authUser.id);
-          if (profileResult?.success) {
-            setUserProfile(profileResult.data);
-          }
-        }
-      } else {
-        // Step 2: Try to recover an existing session
-        const sessionResult = await authService.getSession();
-        if (sessionResult?.success && sessionResult?.data?.session?.user && isMounted) {
-          const authUser = sessionResult.data.session.user;
+        // Handle OAuth redirect first (for new sign-ins)
+        const redirectResult = await authService.handleOAuthRedirect();
+        if (redirectResult.success && redirectResult.data?.session && isMounted) {
+          const authUser = redirectResult.data.session.user;
           setUser(authUser);
 
           const profileResult = await authService.getUserProfile(authUser.id);
-          if (profileResult?.success) {
+          if (profileResult.success) {
             setUserProfile(profileResult.data);
           }
+        } else {
+          // Fallback to existing session check
+          const sessionResult = await authService.getSession();
+          if (sessionResult.success && sessionResult.data?.session?.user && isMounted) {
+            const authUser = sessionResult.data.session.user;
+            setUser(authUser);
+
+            const profileResult = await authService.getUserProfile(authUser.id);
+            if (profileResult.success) {
+              setUserProfile(profileResult.data);
+            }
+          }
         }
-      }
 
-      // Step 3: Clean up URL hash after OAuth redirect
-      if (window.location.hash.includes('access_token')) {
-        window.history.replaceState({}, document.title, window.location.pathname);
+        // Cleanup any OAuth URL hash
+        if (window.location.hash.includes('access_token')) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      } catch (err) {
+        if (isMounted) setAuthError(err.message || 'Authentication failed.');
+      } finally {
+        if (isMounted) setLoading(false);
       }
-
-      if (isMounted) setLoading(false);
     };
 
     initializeAuth();
