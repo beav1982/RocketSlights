@@ -6,12 +6,12 @@ A multiplayer card game built with React and Supabase.
 
 ### Environment Variables
 
-For Vercel deployment, set these environment variables:
+For Netlify deployment, set these environment variables:
 
 ```bash
 VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-VITE_APP_URL=https://your-app.vercel.app
+VITE_APP_URL=https://your-app.netlify.app
 ```
 
 ### Supabase Configuration
@@ -23,14 +23,14 @@ VITE_APP_URL=https://your-app.vercel.app
    - Add your Google OAuth credentials
    - Set authorized redirect URLs:
      - `https://your-project.supabase.co/auth/v1/callback`
-     - `https://your-app.vercel.app/auth/callback`
+    - `https://your-app.netlify.app/auth/callback`
 
 2. **Configure Site URL:**
    - Go to Authentication > Settings
-   - Set Site URL to: `https://your-app.vercel.app`
+   - Set Site URL to: `https://your-app.netlify.app`
    - Add redirect URLs:
-     - `https://your-app.vercel.app/game-lobby-dashboard`
-     - `https://your-app.vercel.app/**`
+    - `https://your-app.netlify.app/game-lobby-dashboard`
+    - `https://your-app.netlify.app/**`
 
 ### Google OAuth Setup
 
@@ -42,18 +42,19 @@ VITE_APP_URL=https://your-app.vercel.app
    - `https://your-project.supabase.co/auth/v1/callback`
 6. Copy Client ID and Client Secret to Supabase
 
-### Vercel Deployment
+### Netlify Deployment
 
-1. Connect your repository to Vercel
-2. Set environment variables in Vercel dashboard
+1. Connect your repository to Netlify
+2. Set environment variables in the Netlify dashboard
 3. Deploy
+4. Ensure `netlify.toml` handles SPA redirects
 
 ## Troubleshooting
 
 ### Favicon 404 Error
 - Ensure `public/favicon.ico` exists
 - Check `vite.config.js` configuration
-- Verify Vercel build includes public assets
+- Verify Netlify build includes public assets
 
 ### Google OAuth "Provider not enabled" Error
 - Verify Google provider is enabled in Supabase
