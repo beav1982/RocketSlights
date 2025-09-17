@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 
-const GameHistory = ({ gameHistory }) => {
+const GameHistory = ({ gameHistory = [] }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [sortBy, setSortBy] = useState('date');
@@ -78,7 +78,9 @@ const GameHistory = ({ gameHistory }) => {
     { value: 'duration', label: 'Duration' }
   ];
 
-  const filteredAndSortedHistory = mockGameHistory
+  const historyData = gameHistory.length > 0 ? gameHistory : mockGameHistory;
+
+  const filteredAndSortedHistory = historyData
     .filter(game => {
       const matchesSearch = game.gameCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            game.players.some(player => player.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -117,7 +119,7 @@ const GameHistory = ({ gameHistory }) => {
   };
 
   const handleExportData = () => {
-    const dataStr = JSON.stringify(mockGameHistory, null, 2);
+    const dataStr = JSON.stringify(historyData, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(dataBlob);
     const link = document.createElement('a');

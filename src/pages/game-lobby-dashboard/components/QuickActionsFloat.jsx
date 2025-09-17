@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../../../components/AppIcon';
 
@@ -25,6 +25,7 @@ const QuickActionsFloat = ({ onInviteFriends = () => {}, onShareGame = () => {} 
       icon: 'Share2',
       color: 'bg-secondary',
       onClick: () => {
+        onShareGame();
         setShowShareOptions(true);
         setIsExpanded(false);
       }
