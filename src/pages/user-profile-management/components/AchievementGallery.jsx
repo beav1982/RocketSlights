@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Icon from '../../../components/AppIcon';
 
-const AchievementGallery = ({ achievements }) => {
+const AchievementGallery = ({ achievements = [] }) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   const achievementCategories = [
@@ -71,9 +71,14 @@ const AchievementGallery = ({ achievements }) => {
     }
   ];
 
-  const filteredAchievements = selectedCategory === 'all' 
-    ? mockAchievements 
-    : mockAchievements.filter(achievement => achievement.category === selectedCategory);
+  const achievementData = useMemo(
+    () => (achievements.length > 0 ? achievements : mockAchievements),
+    [achievements]
+  );
+
+  const filteredAchievements = selectedCategory === 'all'
+    ? achievementData
+    : achievementData.filter(achievement => achievement.category === selectedCategory);
 
   const getRarityColor = (rarity) => {
     const colors = {
@@ -99,7 +104,7 @@ const AchievementGallery = ({ achievements }) => {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold text-foreground">Achievements</h2>
         <div className="text-sm text-muted-foreground">
-          {mockAchievements.filter(a => a.earned).length} / {mockAchievements.length} earned
+          {achievementData.filter(a => a.earned).length} / {achievementData.length} earned
         </div>
       </div>
 

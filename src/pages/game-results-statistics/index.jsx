@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ContextualHeader from '../../components/ui/ContextualHeader';
 import BottomTabNavigation from '../../components/ui/BottomTabNavigation';
 import GameFlowContainer from '../../components/ui/GameFlowContainer';
@@ -13,7 +13,6 @@ import Icon from '../../components/AppIcon';
 
 const GameResultsStatistics = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [gameData, setGameData] = useState(null);
   const [currentPlayer, setCurrentPlayer] = useState(null);

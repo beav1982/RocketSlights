@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import BottomTabNavigation from '../../components/ui/BottomTabNavigation';
 import GameFlowContainer from '../../components/ui/GameFlowContainer';
@@ -18,7 +18,6 @@ import {
 
 const ActiveGameplayInterface = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   
   // Game state
   const [gameState, setGameState] = useState('submission'); // 'submission' | 'judging' | 'results' | 'finished'
