@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import Icon from '../../../components/AppIcon';
 
 const AchievementGallery = ({ achievements = [] }) => {
@@ -71,10 +71,7 @@ const AchievementGallery = ({ achievements = [] }) => {
     }
   ];
 
-  const achievementData = useMemo(
-    () => (achievements.length > 0 ? achievements : mockAchievements),
-    [achievements]
-  );
+  const achievementData = achievements.length > 0 ? achievements : mockAchievements;
 
   const filteredAchievements = selectedCategory === 'all'
     ? achievementData

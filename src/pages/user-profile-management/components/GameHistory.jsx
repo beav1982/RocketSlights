@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
@@ -78,10 +78,7 @@ const GameHistory = ({ gameHistory = [] }) => {
     { value: 'duration', label: 'Duration' }
   ];
 
-  const historyData = useMemo(
-    () => (gameHistory.length > 0 ? gameHistory : mockGameHistory),
-    [gameHistory]
-  );
+  const historyData = gameHistory.length > 0 ? gameHistory : mockGameHistory;
 
   const filteredAndSortedHistory = historyData
     .filter(game => {
